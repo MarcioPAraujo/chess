@@ -1,0 +1,21 @@
+.board {
+    display: grid;
+    place-items: center;
+}
+
+.square {
+    min-width: 5rem;
+    max-width: 8rem;
+    aspect-ratio: 1;
+}
+
+.row {
+    display: flex;
+}
+
+.black {
+    background-color: black;
+}
+.white {
+    background-color: white;
+}
