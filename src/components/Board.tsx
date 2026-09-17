@@ -14,11 +14,17 @@ const boardSquares: ISquare[][] = Array.from({ length: 8 }, (_, i) => {
     });
 });
 
+const xCoordinates = Array.from({ length: 8 }, (_, i) => i + 1);
+const yCoordinates = Array.from({ length: 8 }, (_, i) =>
+    String.fromCharCode(97 + i),
+);
+
 function Board() {
     return (
         <div className={styles.board}>
             {boardSquares.map((board, idx) => (
                 <div key={idx} className={`${styles.row}`}>
+                    <div className={styles.xcoor}>{idx + 1}</div>
                     {board.map((square) => (
                         <div
                             key={`${square.xCoordinate}${square.yCoordinate}`}
@@ -27,6 +33,16 @@ function Board() {
                     ))}
                 </div>
             ))}
+            <div className={styles.row}>
+                {yCoordinates.map((coor) => (
+                    <div
+                        key={crypto.randomUUID()}
+                        className={`${styles.ycoor}`}
+                    >
+                        {coor}
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
