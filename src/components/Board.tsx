@@ -4,9 +4,11 @@ import { ISquare } from "@/interfaces/Square";
 import React from "react";
 import styles from "./board.module.css";
 
+let counter = 0;
 const boardSquares: ISquare[][] = Array.from({ length: 8 }, (_, i) => {
     return Array.from({ length: 8 }, (_, j) => {
         return {
+            id: counter++,
             color: (i + j) % 2 === 0 ? "white" : "black",
             x: String.fromCharCode(97 + j),
             y: 8 - i,
@@ -14,7 +16,7 @@ const boardSquares: ISquare[][] = Array.from({ length: 8 }, (_, i) => {
     });
 });
 
-const yCoordinates = Array.from({ length: 8 }, (_, i) =>
+const xCoordinates = Array.from({ length: 8 }, (_, i) =>
     String.fromCharCode(97 + i),
 );
 
@@ -25,8 +27,8 @@ function Board() {
         <div className={styles.board}>
             {boardSquares.map((board, idx) => (
                 <div key={idx} className={`${styles.row}`}>
-                    {/* x - coordinates */}
-                    <div className={styles.xcoor}>{idx + 1}</div>
+                    {/* y - coordinates */}
+                    <div className={styles.ycoor}>{idx + 1}</div>
                     {/* board squares */}
                     {board.map((square) => (
                         <div
@@ -36,12 +38,12 @@ function Board() {
                     ))}
                 </div>
             ))}
-            {/* y coordinates */}
-            <div className={styles.row}>
-                {yCoordinates.map((coor) => (
+            {/* x coordinates */}
+            <div className={styles.row} style={{ marginLeft: "1.25rem" }}>
+                {xCoordinates.map((coor) => (
                     <div
                         key={crypto.randomUUID()}
-                        className={`${styles.ycoor}`}
+                        className={`${styles.xcoor}`}
                     >
                         {coor}
                     </div>
