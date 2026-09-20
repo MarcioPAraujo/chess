@@ -1,9 +1,14 @@
-import Board from "@/components/Board";
+"use client";
+
+import Board from "@/components/board/Board";
+import { PiecesProvider } from "@/hooks/usePieces";
 
 export default function Home() {
     return (
-        <div>
-            <Board />
-        </div>
+        <PiecesProvider>
+            <div>
+                <Board />
+            </div>
+        </PiecesProvider>
     );
 }

@@ -3,13 +3,13 @@
 import { ISquare } from "@/interfaces/Square";
 import React from "react";
 import styles from "./board.module.css";
+import Piece from "../Piece/Piece";
 
 let counter = 0;
 const boardSquares: ISquare[][] = Array.from({ length: 8 }, (_, i) => {
     return Array.from({ length: 8 }, (_, j) => {
         return {
             id: counter++,
-            color: (i + j) % 2 === 0 ? "white" : "black",
             x: String.fromCharCode(97 + j),
             y: 8 - i,
         };
@@ -20,21 +20,21 @@ const xCoordinates = Array.from({ length: 8 }, (_, i) =>
     String.fromCharCode(97 + i),
 );
 
-// TODO receive an array of pieces, and render them on the matched coordinate
-
 function Board() {
     return (
         <div className={styles.board}>
-            {boardSquares.map((board, idx) => (
-                <div key={idx} className={`${styles.row}`}>
+            {boardSquares.map((board, i) => (
+                <div key={i} className={`${styles.row}`}>
                     {/* y - coordinates */}
-                    <div className={styles.ycoor}>{idx + 1}</div>
+                    <div className={styles.ycoor}>{8 - i}</div>
                     {/* board squares */}
-                    {board.map((square) => (
+                    {board.map((square, j) => (
                         <div
                             key={`${square.x}${square.y}`}
-                            className={`${styles.square} ${styles[square.color]} ${square.x}${square.y}`}
-                        ></div>
+                            className={`${styles.square} ${(i + j) % 2 === 0 ? styles.white : styles.black} ${square.x}${square.y}`}
+                        >
+                            <Piece square={square} />
+                        </div>
                     ))}
                 </div>
             ))}
