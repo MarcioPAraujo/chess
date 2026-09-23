@@ -17,7 +17,7 @@ const parsePiecesToMap = (pieces: IPiece[]): Map<string, IPiece> => {
     pieces.forEach((piece) => {
         piecesMap.set(`${piece.x}${piece.y}`, piece);
     });
-
+    console.log(piecesMap);
     return piecesMap;
 };
 

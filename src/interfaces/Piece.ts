@@ -26,6 +26,10 @@ export const isPieceCodeValid = (code: string): code is PieceCodeType => {
         return false;
     }
 
+    if (code.length < 1) {
+        return false;
+    }
+
     const pieces = new Set([
         "q",
         "Q",

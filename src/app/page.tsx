@@ -2,11 +2,12 @@
 
 import Board from "@/components/board/Board";
 import { PiecesProvider } from "@/hooks/usePieces";
+import styles from "./page.module.css";
 
 export default function Home() {
     return (
         <PiecesProvider>
-            <div>
+            <div className={styles.container}>
                 <Board />
             </div>
         </PiecesProvider>
