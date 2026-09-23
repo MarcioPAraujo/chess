@@ -7,12 +7,19 @@ import { useBoard } from "@/hooks/useBoard";
 import { IPiece } from "@/interfaces/Piece";
 import { useMoves } from "@/hooks/useMoves";
 import { usePiecesProvider } from "@/hooks/usePieces";
+import { ISquare } from "@/interfaces/Square";
 
 function Board() {
     const { boardSquares, xCoordinates } = useBoard();
     const { possibleMoves } = useMoves();
-    const { pieces } = usePiecesProvider();
+    const { pieces, movePiece } = usePiecesProvider();
     const [selectedPiece, setSelectedPiece] = useState<IPiece | undefined>();
+
+    const onMovePiece = (piece: IPiece, newSquare: ISquare) => {
+        movePiece(piece, newSquare);
+        setSelectedPiece(undefined);
+    };
+
     return (
         <div className={styles.board}>
             {boardSquares.map((board, i) => (
@@ -29,7 +36,13 @@ function Board() {
                                 possibleMoves(selectedPiece, pieces).get(
                                     `${square.x}${square.y}`,
                                 ) !== undefined && (
-                                    <span className={styles.possibleMove} />
+                                    <button
+                                        type="button"
+                                        className={styles.possibleMove}
+                                        onClick={() =>
+                                            onMovePiece(selectedPiece, square)
+                                        }
+                                    />
                                 )}
                             <Piece square={square} onClick={setSelectedPiece} />
                         </div>
