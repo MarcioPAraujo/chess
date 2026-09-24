@@ -1,4 +1,4 @@
-import { IPiece, isPieceCodeValid, PieceCodeType } from "@/interfaces/Piece";
+import { IPiece, isPieceCodeValid } from "@/interfaces/Piece";
 import { ISquare } from "@/interfaces/Square";
 import { useBoard } from "./useBoard";
 import { isUpperCase } from "@/utils/verifyCase";
@@ -34,25 +34,26 @@ const pawn = (
 ): Map<string, ISquare> => {
     const moves: Map<string, ISquare> = new Map<string, ISquare>();
 
-    if (piece.movementsMade === 0) {
-        const forward = newPlace(piece, 2);
-        const twoForward = otherPieces.get(`${forward.x}${forward.y}`);
-        if (!twoForward) {
-            moves.set(`${forward.x}${forward.y}`, forward);
-        }
-    }
     const oneMoveForward = newPlace(piece, 1);
     const oneFoward = otherPieces.get(`${oneMoveForward.x}${oneMoveForward.y}`);
     if (!oneFoward) {
         moves.set(`${oneMoveForward.x}${oneMoveForward.y}`, oneMoveForward);
     }
 
-    const leftTakePiece = otherPieces.get(`${piece.x - 1}${piece.y + 1}`);
-    const hasLeftTake = piece.x > 1 && leftTakePiece !== undefined;
+    if (piece.movementsMade === 0 && !oneFoward) {
+        const forward = newPlace(piece, 2);
+        const twoForward = otherPieces.get(`${forward.x}${forward.y}`);
+        if (!twoForward) {
+            moves.set(`${forward.x}${forward.y}`, forward);
+        }
+    }
+
+    const left = newPlace(piece, 1, -1);
+    const leftTakePiece = otherPieces.get(`${left.x}${left.y}`);
+    const hasLeftTake = left.x >= 1 && leftTakePiece !== undefined;
     if (
         hasLeftTake &&
-        isUpperCase(leftTakePiece.code) &&
-        !isUpperCase(piece.code)
+        isUpperCase(leftTakePiece.code) !== isUpperCase(piece.code)
     ) {
         const leftTakeMove: ISquare = {
             x: leftTakePiece.x,
@@ -61,12 +62,12 @@ const pawn = (
         moves.set(`${leftTakeMove.x}${leftTakeMove.y}`, leftTakeMove);
     }
 
-    const rightTakePiece = otherPieces.get(`${piece.x + 1}${piece.y + 1}`);
-    const hasRightTake = piece.y < 8 && rightTakePiece !== undefined;
+    const right = newPlace(piece, 1, 1);
+    const rightTakePiece = otherPieces.get(`${right.x}${right.y}`);
+    const hasRightTake = right.y <= 8 && rightTakePiece !== undefined;
     if (
         hasRightTake &&
-        isUpperCase(rightTakePiece.code) &&
-        !isUpperCase(piece.code)
+        isUpperCase(rightTakePiece.code) !== isUpperCase(piece.code)
     ) {
         const rightTakeMove: ISquare = {
             x: rightTakePiece.x,
@@ -74,7 +75,6 @@ const pawn = (
         };
         moves.set(`${rightTakeMove.x}${rightTakeMove.y}`, rightTakeMove);
     }
-
     return moves;
 };
 export const useMoves = () => {
