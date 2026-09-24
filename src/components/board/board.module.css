@@ -34,11 +34,3 @@
 .white {
     background-color: white;
 }
-
-.possibleMove {
-    background-color: var(--gray-40);
-    border-radius: 50%;
-    width: 3rem;
-    aspect-ratio: 1;
-    cursor: pointer;
-}

@@ -5,21 +5,11 @@ import styles from "./board.module.css";
 import Piece from "@/components/Piece/Piece";
 import { useBoard } from "@/hooks/useBoard";
 import { IPiece } from "@/interfaces/Piece";
-import { useMoves } from "@/hooks/useMoves";
-import { usePiecesProvider } from "@/hooks/usePieces";
-import { ISquare } from "@/interfaces/Square";
+import PossibleMoves from "../PossibleMoves/PossibleMoves";
 
 function Board() {
     const { boardSquares, xCoordinates } = useBoard();
-    const { possibleMoves } = useMoves();
-    const { pieces, movePiece } = usePiecesProvider();
     const [selectedPiece, setSelectedPiece] = useState<IPiece | undefined>();
-
-    const onMovePiece = (piece: IPiece, newSquare: ISquare) => {
-        movePiece(piece, newSquare);
-        setSelectedPiece(undefined);
-    };
-
     return (
         <div className={styles.board}>
             {boardSquares.map((board, i) => (
@@ -32,18 +22,11 @@ function Board() {
                             key={`${square.x}${square.y}`}
                             className={`${styles.square} ${(i + j) % 2 === 0 ? styles.white : styles.black} ${square.x}${square.y}`}
                         >
-                            {selectedPiece &&
-                                possibleMoves(selectedPiece, pieces).get(
-                                    `${square.x}${square.y}`,
-                                ) !== undefined && (
-                                    <button
-                                        type="button"
-                                        className={styles.possibleMove}
-                                        onClick={() =>
-                                            onMovePiece(selectedPiece, square)
-                                        }
-                                    />
-                                )}
+                            <PossibleMoves
+                                boardSquare={square}
+                                selectedPiece={selectedPiece}
+                                onClick={() => setSelectedPiece(undefined)}
+                            />
                             <Piece square={square} onClick={setSelectedPiece} />
                         </div>
                     ))}
