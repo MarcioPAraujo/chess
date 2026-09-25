@@ -40,21 +40,39 @@ export const convertPiecesInFen = (
 ): string => {
     let emptySquares = 0;
     let fen = "";
+    let fenRow = "";
 
     boardSquares.forEach((row) => {
         row.forEach((square) => {
             const piece = pieces.get(`${square.x}${square.y}`);
-
             if (!piece) {
                 emptySquares++;
             } else {
+                const emptySpaces = fenRow.replace(/[^0-9]/g, "").split("");
+                const totalEmptySpaces = emptySpaces.reduce(
+                    (acc: number, current) => {
+                        const numericAcc = parseInt(current, 10);
+                        if (isNaN(numericAcc)) {
+                            return acc;
+                        }
+                        return numericAcc + acc;
+                    },
+                    0,
+                );
+
+                const rowPieces = fenRow.replace(/[0-9]/g, "").length;
+
+                if (totalEmptySpaces + rowPieces === 8) {
+                    fenRow += "/";
+                    fen += fenRow;
+                    fenRow = "";
+                }
                 if (emptySquares > 0) {
-                    fen += emptySquares;
+                    fenRow += emptySquares;
                     emptySquares = 0;
                 }
-                fen += piece.code;
+                fenRow += piece.code;
             }
-            // TODO: add a logic to add the slash "/" separator
         });
     });
 
