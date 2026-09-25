@@ -1,6 +1,5 @@
 import { IPiece, isPieceCodeValid } from "@/interfaces/Piece";
 import { ISquare } from "@/interfaces/Square";
-import { useBoard } from "./useBoard";
 import { isUpperCase } from "@/utils/verifyCase";
 /**
  *
@@ -78,20 +77,6 @@ const pawn = (
     return moves;
 };
 export const useMoves = () => {
-    const { boardMap } = useBoard();
-
-    // // TODO: find a way to avoid code repetiton, in black moves and white moves
-    // const piecesMoves: Record<
-    //     PieceCodeType,
-    //     (
-    //         piece: IPiece,
-    //         otherPieces: Map<string, IPiece>,
-    //     ) => Map<string, ISquare>
-    // > = {
-    //     p: pawn,
-    //     P: pawn,
-    // };
-
     const possibleMoves = (
         piece: IPiece,
         otherPieces: Map<string, IPiece>,

@@ -4,4 +4,11 @@
     width: 3rem;
     aspect-ratio: 1;
     cursor: pointer;
+    position: absolute;
+    z-index: 1;
+}
+
+.take {
+    border: 3px dashed black;
+    width: 90%;
 }

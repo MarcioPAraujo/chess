@@ -1,6 +1,8 @@
 .piece {
-    width: 90%;
-    height: 90%;
+    position: absolute;
+    z-index: 1;
+    width: 80%;
+    height: 80%;
     border-radius: 50%;
 
     border: none;

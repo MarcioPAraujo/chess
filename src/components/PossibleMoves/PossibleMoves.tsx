@@ -22,18 +22,21 @@ const PossibleMoves: FC<IPossibleMovesProps> = ({
     const { pieces, movePiece } = usePiecesProvider();
     if (selectedPiece === undefined) return null;
 
-    if (
-        possibleMoves(selectedPiece, pieces).get(
-            `${boardSquare.x}${boardSquare.y}`,
-        ) === undefined
-    ) {
+    const moves = possibleMoves(selectedPiece, pieces);
+
+    if (moves.get(`${boardSquare.x}${boardSquare.y}`) === undefined) {
         return null;
     }
+
+    const takeStyle =
+        pieces.get(`${boardSquare.x}${boardSquare.y}`) !== undefined
+            ? styles.take
+            : "";
 
     return (
         <button
             type="button"
-            className={styles.possibleMove}
+            className={`${styles.possibleMove} ${takeStyle}`}
             onClick={() => {
                 movePiece(selectedPiece, boardSquare);
                 onClick();

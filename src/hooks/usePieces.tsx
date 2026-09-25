@@ -6,6 +6,7 @@ import {
     Context,
     createContext,
     ReactNode,
+    useCallback,
     useContext,
     useMemo,
     useState,
@@ -21,18 +22,8 @@ interface IBoardStatus {
     movePiece: (piece: IPiece, newSquare: ISquare) => void;
 }
 
-const parsePiecesToMap = (pieces: IPiece[]): Map<string, IPiece> => {
-    const piecesMap: Map<string, IPiece> = new Map();
-
-    pieces.forEach((piece) => {
-        piecesMap.set(`${piece.x}${piece.y}`, piece);
-    });
-    console.log(piecesMap);
-    return piecesMap;
-};
-
 const initialBoard: IBoardStatus = {
-    pieces: parsePiecesToMap(convertFenInPieces(DEFAULT_FEN)),
+    pieces: convertFenInPieces(DEFAULT_FEN),
     fen: DEFAULT_FEN,
     movePiece: () => {},
 };
@@ -42,7 +33,7 @@ const PieceContext: Context<IBoardStatus> = createContext(initialBoard);
 export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
     const [fen, setFen] = useState<string>(DEFAULT_FEN);
     const [pieces, setPieces] = useState<Map<string, IPiece>>(
-        parsePiecesToMap(convertFenInPieces(fen)),
+        convertFenInPieces(fen),
     );
 
     const movePiece = (piece: IPiece, newSquare: ISquare) => {
@@ -56,6 +47,8 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
         pieces.set(`${newPosition.x}${newPosition.y}`, newPosition);
         setPieces(pieces);
     };
+
+    const updateFen = useCallback(() => {}, []);
 
     const board: IBoardStatus = useMemo(() => {
         return {
