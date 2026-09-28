@@ -40,41 +40,61 @@ export const convertPiecesInFen = (
 ): string => {
     let emptySquares = 0;
     let fen = "";
-    let fenRow = "";
 
     boardSquares.forEach((row) => {
         row.forEach((square) => {
             const piece = pieces.get(`${square.x}${square.y}`);
-            if (!piece) {
-                emptySquares++;
-            } else {
-                const emptySpaces = fenRow.replace(/[^0-9]/g, "").split("");
-                const totalEmptySpaces = emptySpaces.reduce(
-                    (acc: number, current) => {
-                        const numericAcc = parseInt(current, 10);
-                        if (isNaN(numericAcc)) {
-                            return acc;
-                        }
-                        return numericAcc + acc;
-                    },
-                    0,
-                );
-
-                const rowPieces = fenRow.replace(/[0-9]/g, "").length;
-
-                if (totalEmptySpaces + rowPieces === 8) {
-                    fenRow += "/";
-                    fen += fenRow;
-                    fenRow = "";
-                }
-                if (emptySquares > 0) {
-                    fenRow += emptySquares;
+            if (piece === undefined) {
+                if (emptySquares === 8) {
+                    fen += "8";
                     emptySquares = 0;
                 }
-                fenRow += piece.code;
+                emptySquares++;
+            } else {
+                if (emptySquares > 0) {
+                    fen += emptySquares;
+                    emptySquares = 0;
+                }
+                fen += piece.code;
             }
         });
     });
 
-    return fen;
+    const letters = fen.split("");
+    let f = "";
+    let row = "";
+    let rowLength = 0;
+    letters.forEach((letter) => {
+        const isLetter = /[^0-9]/g.test(letter);
+        if (rowLength === 8) {
+            rowLength = 0;
+            f += `${row}/`;
+            row = "";
+        }
+        if (isLetter) {
+            row += letter;
+            rowLength++;
+            return;
+        }
+        const remainingSpaces = 8 - rowLength;
+        const empty = parseInt(letter, 10);
+        if (remainingSpaces < empty) {
+            const rest = empty - remainingSpaces;
+            rowLength += remainingSpaces;
+            row += `${letter}/`;
+            f += row;
+            row = `${rest}`;
+            rowLength = rest;
+            return;
+        }
+        rowLength += empty;
+        row += letter;
+        f += row;
+        row = "";
+    });
+    if (row.length > 0) {
+        f += row;
+    }
+
+    return f;
 };

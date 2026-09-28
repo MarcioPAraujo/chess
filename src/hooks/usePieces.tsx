@@ -1,16 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { IPiece } from "@/interfaces/Piece";
 import { ISquare } from "@/interfaces/Square";
-import { convertFenInPieces, DEFAULT_FEN } from "@/utils/FEN";
+import {
+    convertFenInPieces,
+    convertPiecesInFen,
+    DEFAULT_FEN,
+} from "@/utils/FEN";
 import {
     Context,
     createContext,
     ReactNode,
-    useCallback,
     useContext,
     useMemo,
     useState,
 } from "react";
+import { useBoard } from "./useBoard";
 
 interface IChildrenProps {
     children: ReactNode;
@@ -31,9 +35,10 @@ const initialBoard: IBoardStatus = {
 const PieceContext: Context<IBoardStatus> = createContext(initialBoard);
 
 export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
+    const { boardSquares } = useBoard();
     const [fen, setFen] = useState<string>(DEFAULT_FEN);
     const [pieces, setPieces] = useState<Map<string, IPiece>>(
-        convertFenInPieces(fen),
+        convertFenInPieces(DEFAULT_FEN),
     );
 
     const movePiece = (piece: IPiece, newSquare: ISquare) => {
@@ -45,10 +50,9 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
         };
         pieces.delete(`${piece.x}${piece.y}`);
         pieces.set(`${newPosition.x}${newPosition.y}`, newPosition);
+        setFen(convertPiecesInFen(pieces, boardSquares));
         setPieces(pieces);
     };
-
-    const updateFen = useCallback(() => {}, []);
 
     const board: IBoardStatus = useMemo(() => {
         return {
