@@ -61,14 +61,14 @@ export const convertPiecesInFen = (
     });
 
     const letters = fen.split("");
-    let f = "";
+    let formattedFen = "";
     let row = "";
     let rowLength = 0;
     letters.forEach((letter) => {
         const isLetter = /[^0-9]/g.test(letter);
         if (rowLength === 8) {
             rowLength = 0;
-            f += `${row}/`;
+            formattedFen += `${row}/`;
             row = "";
         }
         if (isLetter) {
@@ -78,23 +78,24 @@ export const convertPiecesInFen = (
         }
         const remainingSpaces = 8 - rowLength;
         const empty = parseInt(letter, 10);
-        if (remainingSpaces < empty) {
-            const rest = empty - remainingSpaces;
-            rowLength += remainingSpaces;
-            row += `${letter}/`;
-            f += row;
-            row = `${rest}`;
-            rowLength = rest;
+        if (remainingSpaces >= empty) {
+            rowLength += empty;
+            formattedFen += `${row}${letter}`;
+            row = "";
             return;
         }
-        rowLength += empty;
-        row += letter;
-        f += row;
-        row = "";
+        const rest = empty - remainingSpaces;
+        rowLength += remainingSpaces;
+        row += `${letter}/`;
+        formattedFen += row;
+        row = `${rest}`;
+        rowLength = rest;
     });
     if (row.length > 0) {
-        f += row;
+        formattedFen += row;
     }
 
-    return f;
+    console.log({ formattedFen, fen });
+
+    return formattedFen;
 };
