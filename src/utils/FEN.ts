@@ -1,10 +1,12 @@
 import { IPiece, isPieceCodeValid } from "@/interfaces/Piece";
 import { ISquare } from "@/interfaces/Square";
 
-export const DEFAULT_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+export const DEFAULT_FEN =
+    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - - -";
 
 export const convertFenInPieces = (fen: string): Map<string, IPiece> => {
-    const rows = fen.split("/");
+    const fenPiecesPart = fen.split(" ")[0];
+    const rows = fenPiecesPart.split("/");
 
     if (rows.length !== 8) {
         throw new Error(`the FEN code: ${fen} might be incorrect`);
@@ -20,7 +22,7 @@ export const convertFenInPieces = (fen: string): Map<string, IPiece> => {
                 continue;
             }
             if (!isPieceCodeValid(rowPiece)) {
-                throw new Error(`the piece "${rowPiece}" is ont a valid piece`);
+                throw new Error(`the piece ${rowPiece} is ont a valid piece`);
             }
             const piece: IPiece = {
                 code: rowPiece,
@@ -94,8 +96,6 @@ export const convertPiecesInFen = (
     if (row.length > 0) {
         formattedFen += row;
     }
-
-    console.log({ formattedFen, fen });
 
     return formattedFen;
 };
