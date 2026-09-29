@@ -15,6 +15,9 @@ import {
     useState,
 } from "react";
 import { useBoard } from "./useBoard";
+import { isUpperCase } from "@/utils/verifyCase";
+
+export type TurnType = "w" | "b";
 
 interface IChildrenProps {
     children: ReactNode;
@@ -24,12 +27,14 @@ interface IBoardStatus {
     fen: string;
     pieces: Map<string, IPiece>;
     movePiece: (piece: IPiece, newSquare: ISquare) => void;
+    turn: TurnType;
 }
 
 const initialBoard: IBoardStatus = {
     pieces: convertFenInPieces(DEFAULT_FEN),
     fen: DEFAULT_FEN,
     movePiece: () => {},
+    turn: "w",
 };
 
 const PieceContext: Context<IBoardStatus> = createContext(initialBoard);
@@ -40,8 +45,12 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
     const [pieces, setPieces] = useState<Map<string, IPiece>>(
         convertFenInPieces(DEFAULT_FEN),
     );
+    // Counts moves since the last pawn advance or capture.
+    const [halfmoveClock, setHalfmoveClock] = useState<number>(0);
+    const [turn, setTurn] = useState<TurnType>("w");
 
     const movePiece = (piece: IPiece, newSquare: ISquare) => {
+        const isWhitePiece = isUpperCase(piece.code);
         const newPosition: IPiece = {
             ...piece,
             movementsMade: piece.movementsMade + 1,
@@ -50,6 +59,10 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
         };
         pieces.delete(`${piece.x}${piece.y}`);
         pieces.set(`${newPosition.x}${newPosition.y}`, newPosition);
+        if (piece.code.toLowerCase() === "p") {
+            setHalfmoveClock((prev) => prev + 1);
+        }
+        setTurn(isWhitePiece ? "b" : "w");
         setFen(convertPiecesInFen(pieces, boardSquares));
         setPieces(pieces);
     };
@@ -58,9 +71,10 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
         return {
             fen,
             pieces,
+            turn,
             movePiece,
         };
-    }, [fen, pieces]);
+    }, [fen, pieces, turn]);
 
     return (
         <PieceContext.Provider value={board}>{children}</PieceContext.Provider>

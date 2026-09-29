@@ -13,17 +13,19 @@ interface IPieceProps {
 }
 
 function Piece({ square, onClick }: IPieceProps) {
-    const { pieces } = usePiecesProvider();
+    const { pieces, turn } = usePiecesProvider();
     const piece = pieces.get(`${square.x}${square.y}`);
     if (piece === undefined) {
         return null;
     }
 
-    const styleColor = isLowerCase(piece.code) ? styles.black : styles.white;
+    const isBlack = isLowerCase(piece.code);
+    const styleColor = isBlack ? styles.black : styles.white;
 
     return (
         <button
             type="button"
+            disabled={(turn === "b" && !isBlack) || (turn === "w" && isBlack)}
             className={`${styles.piece} ${styleColor}`}
             onClick={() => {
                 onClick(piece);

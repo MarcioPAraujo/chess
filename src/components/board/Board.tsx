@@ -10,6 +10,7 @@ import PossibleMoves from "../PossibleMoves/PossibleMoves";
 function Board() {
     const { boardSquares, xCoordinates } = useBoard();
     const [selectedPiece, setSelectedPiece] = useState<IPiece | undefined>();
+
     return (
         <div className={styles.board}>
             {boardSquares.map((board, i) => (

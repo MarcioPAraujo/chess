@@ -14,6 +14,10 @@
     &:active {
         cursor: grabbing;
     }
+
+    &:disabled {
+        cursor: default;
+    }
 }
 .black {
     background-color: black;

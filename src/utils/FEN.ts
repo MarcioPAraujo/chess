@@ -43,29 +43,43 @@ export const convertPiecesInFen = (
     let emptySquares = 0;
     let fen = "";
 
+    let moventsMade = 0;
+    const castlingRights = {
+        K: false,
+        Q: false,
+        k: false,
+        q: false,
+    };
+
     boardSquares.forEach((row) => {
         row.forEach((square) => {
             const piece = pieces.get(`${square.x}${square.y}`);
             if (piece === undefined) {
+                //TODO: check for empty squares that start in a row and ends on the next row
                 if (emptySquares === 8) {
                     fen += "8";
                     emptySquares = 0;
                 }
                 emptySquares++;
-            } else {
-                if (emptySquares > 0) {
-                    fen += emptySquares;
-                    emptySquares = 0;
-                }
-                fen += piece.code;
+                return;
             }
+            if (emptySquares > 0) {
+                fen += emptySquares;
+                emptySquares = 0;
+            }
+            fen += piece.code;
+
+            moventsMade += piece.movementsMade;
         });
     });
+
+    const turn = moventsMade % 2 === 0 ? "w" : "b";
 
     const letters = fen.split("");
     let formattedFen = "";
     let row = "";
     let rowLength = 0;
+    console.log(fen);
     letters.forEach((letter) => {
         const isLetter = /[^0-9]/g.test(letter);
         if (rowLength === 8) {
@@ -97,5 +111,16 @@ export const convertPiecesInFen = (
         formattedFen += row;
     }
 
-    return formattedFen;
+    const castling = Object.entries(castlingRights).reduce(
+        (acc: string, [key, value]) => {
+            if (value) {
+                acc = acc.replace("-", "");
+                return `${acc}${key}`;
+            }
+            return acc;
+        },
+        "-",
+    );
+
+    return `${formattedFen} ${turn} ${castling}`;
 };
