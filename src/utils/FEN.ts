@@ -42,8 +42,11 @@ export const convertPiecesInFen = (
 ): string => {
     let emptySquares = 0;
     let fen = "";
+    let row = "";
+    let currentRowLength = 0;
 
     let moventsMade = 0;
+    // TODO: create the castling rights string inside the fen string loop
     const castlingRights = {
         K: false,
         Q: false,
@@ -51,64 +54,49 @@ export const convertPiecesInFen = (
         q: false,
     };
 
-    boardSquares.forEach((row) => {
-        row.forEach((square) => {
-            const piece = pieces.get(`${square.x}${square.y}`);
-            if (piece === undefined) {
-                //TODO: check for empty squares that start in a row and ends on the next row
-                if (emptySquares === 8) {
-                    fen += "8";
-                    emptySquares = 0;
+    boardSquares.forEach((rowBoard) => {
+        rowBoard.forEach((square) => {
+            const ROW_LENGTH = 8;
+            const remainingSpaces = ROW_LENGTH - currentRowLength;
+            if (currentRowLength === ROW_LENGTH) {
+                if (emptySquares > 0) {
+                    row += `${emptySquares}`;
                 }
-                emptySquares++;
-                return;
-            }
-            if (emptySquares > 0) {
-                fen += emptySquares;
+
+                fen += `${row}/`;
+                currentRowLength = 0;
+                row = "";
                 emptySquares = 0;
             }
-            fen += piece.code;
+            const piece = pieces.get(`${square.x}${square.y}`);
 
+            if (piece === undefined) {
+                emptySquares++;
+                currentRowLength++;
+                return;
+            }
             moventsMade += piece.movementsMade;
+
+            if (emptySquares === 0) {
+                row += piece.code;
+                currentRowLength++;
+                return;
+            }
+            if (currentRowLength >= ROW_LENGTH) {
+                row += `${emptySquares}${piece.code}/`;
+                emptySquares -= remainingSpaces;
+                currentRowLength = emptySquares;
+                emptySquares = 0;
+            } else {
+                row += `${emptySquares}${piece.code}`;
+                emptySquares = 0;
+                currentRowLength++;
+            }
         });
     });
 
-    const turn = moventsMade % 2 === 0 ? "w" : "b";
-
-    const letters = fen.split("");
-    let formattedFen = "";
-    let row = "";
-    let rowLength = 0;
-    console.log(fen);
-    letters.forEach((letter) => {
-        const isLetter = /[^0-9]/g.test(letter);
-        if (rowLength === 8) {
-            rowLength = 0;
-            formattedFen += `${row}/`;
-            row = "";
-        }
-        if (isLetter) {
-            row += letter;
-            rowLength++;
-            return;
-        }
-        const remainingSpaces = 8 - rowLength;
-        const empty = parseInt(letter, 10);
-        if (remainingSpaces >= empty) {
-            rowLength += empty;
-            formattedFen += `${row}${letter}`;
-            row = "";
-            return;
-        }
-        const rest = empty - remainingSpaces;
-        rowLength += remainingSpaces;
-        row += `${letter}/`;
-        formattedFen += row;
-        row = `${rest}`;
-        rowLength = rest;
-    });
     if (row.length > 0) {
-        formattedFen += row;
+        fen += `${row}/`;
     }
 
     const castling = Object.entries(castlingRights).reduce(
@@ -122,5 +110,7 @@ export const convertPiecesInFen = (
         "-",
     );
 
-    return `${formattedFen} ${turn} ${castling}`;
+    const turn = moventsMade % 2 === 0 ? "w" : "b";
+
+    return `${fen} ${turn} ${castling}`;
 };
