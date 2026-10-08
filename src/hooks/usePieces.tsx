@@ -59,11 +59,15 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
         };
         pieces.delete(`${piece.x}${piece.y}`);
         pieces.set(`${newPosition.x}${newPosition.y}`, newPosition);
+        let halfmove = halfmoveClock;
         if (piece.code.toLowerCase() === "p") {
-            setHalfmoveClock((prev) => prev + 1);
+            halfmove++;
+            setHalfmoveClock(halfmove);
         }
         setTurn(isWhitePiece ? "b" : "w");
-        setFen(convertPiecesInFen(pieces, boardSquares));
+        const newFen = convertPiecesInFen(pieces, boardSquares, halfmove);
+        console.log(newFen);
+        setFen(newFen);
         setPieces(pieces);
     };
 

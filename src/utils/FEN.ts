@@ -39,6 +39,7 @@ export const convertFenInPieces = (fen: string): Map<string, IPiece> => {
 export const convertPiecesInFen = (
     pieces: Map<string, IPiece>,
     boardSquares: ISquare[][],
+    halfmoveCLock: number,
 ): string => {
     let emptySquares = 0;
     let fen = "";
@@ -75,6 +76,13 @@ export const convertPiecesInFen = (
                 currentRowLength++;
                 return;
             }
+
+            // if (piece.code === 'K' && piece.movementsMade > 0) {
+            //     castlingRights.K = false;
+            //     castlingRights.Q = false;
+            // }
+            // if (piece.code === '')
+
             moventsMade += piece.movementsMade;
 
             if (emptySquares === 0) {
@@ -87,16 +95,17 @@ export const convertPiecesInFen = (
                 emptySquares -= remainingSpaces;
                 currentRowLength = emptySquares;
                 emptySquares = 0;
-            } else {
-                row += `${emptySquares}${piece.code}`;
-                emptySquares = 0;
-                currentRowLength++;
+                return;
             }
+            row += `${emptySquares}${piece.code}`;
+            emptySquares = 0;
+            currentRowLength++;
         });
     });
 
     if (row.length > 0) {
         fen += `${row}/`;
+        row = "";
     }
 
     const castling = Object.entries(castlingRights).reduce(
@@ -112,5 +121,5 @@ export const convertPiecesInFen = (
 
     const turn = moventsMade % 2 === 0 ? "w" : "b";
 
-    return `${fen} ${turn} ${castling}`;
+    return `${fen} ${turn} ${castling} ${halfmoveCLock} ${moventsMade}`;
 };
