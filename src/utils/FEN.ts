@@ -1,5 +1,14 @@
+import { ICastling } from "@/interfaces/Castling";
 import { IPiece, isPieceCodeValid } from "@/interfaces/Piece";
 import { ISquare } from "@/interfaces/Square";
+
+interface IPiecesInFen {
+    pieces: Map<string, IPiece>;
+    boardSquares: ISquare[][];
+    halfmoveCLock: number;
+    pieceMoved: IPiece;
+    castlingRights: ICastling;
+}
 
 export const DEFAULT_FEN =
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - - -";
@@ -36,24 +45,47 @@ export const convertFenInPieces = (fen: string): Map<string, IPiece> => {
     return pieces;
 };
 
-export const convertPiecesInFen = (
-    pieces: Map<string, IPiece>,
-    boardSquares: ISquare[][],
-    halfmoveCLock: number,
-): string => {
+export const convertPiecesInFen = ({
+    boardSquares,
+    castlingRights,
+    halfmoveCLock,
+    pieceMoved,
+    pieces,
+}: IPiecesInFen): string => {
     let emptySquares = 0;
     let fen = "";
     let row = "";
     let currentRowLength = 0;
 
     let moventsMade = 0;
-    // TODO: create the castling rights string inside the fen string loop
-    const castlingRights = {
-        K: false,
-        Q: false,
-        k: false,
-        q: false,
-    };
+
+    if (pieceMoved.movementsMade > 0) {
+        if (pieceMoved.code === "K") {
+            castlingRights.K = false;
+            castlingRights.Q = false;
+        } else if (pieceMoved.code === "k") {
+            castlingRights.k = false;
+            castlingRights.q = false;
+        } else if (pieceMoved.code === "R") {
+            const isLeftWhiteHook = pieceMoved.x === 1 && pieceMoved.y === 1;
+            const isRightWhiteHook = pieceMoved.x === 8 && pieceMoved.y === 1;
+            if (isLeftWhiteHook) {
+                castlingRights.Q = false;
+            }
+            if (isRightWhiteHook) {
+                castlingRights.K = false;
+            }
+        } else if (pieceMoved.code === "r") {
+            const isLeftBlackHook = pieceMoved.x === 1 && pieceMoved.y === 8;
+            const isRightBlakHook = pieceMoved.x === 8 && pieceMoved.y === 8;
+            if (isRightBlakHook) {
+                castlingRights.k = false;
+            }
+            if (isLeftBlackHook) {
+                castlingRights.q = false;
+            }
+        }
+    }
 
     boardSquares.forEach((rowBoard) => {
         rowBoard.forEach((square) => {
@@ -76,12 +108,6 @@ export const convertPiecesInFen = (
                 currentRowLength++;
                 return;
             }
-
-            // if (piece.code === 'K' && piece.movementsMade > 0) {
-            //     castlingRights.K = false;
-            //     castlingRights.Q = false;
-            // }
-            // if (piece.code === '')
 
             moventsMade += piece.movementsMade;
 

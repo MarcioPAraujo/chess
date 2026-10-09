@@ -16,6 +16,7 @@ import {
 } from "react";
 import { useBoard } from "./useBoard";
 import { isUpperCase } from "@/utils/verifyCase";
+import { ICastling } from "@/interfaces/Castling";
 
 export type TurnType = "w" | "b";
 
@@ -39,6 +40,13 @@ const initialBoard: IBoardStatus = {
 
 const PieceContext: Context<IBoardStatus> = createContext(initialBoard);
 
+const DEFAULT_CASTLING: ICastling = {
+    K: true,
+    Q: true,
+    k: true,
+    q: true,
+};
+
 export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
     const { boardSquares } = useBoard();
     const [fen, setFen] = useState<string>(DEFAULT_FEN);
@@ -48,6 +56,18 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
     // Counts moves since the last pawn advance or capture.
     const [halfmoveClock, setHalfmoveClock] = useState<number>(0);
     const [turn, setTurn] = useState<TurnType>("w");
+    const [castling, setCastling] = useState<ICastling>(DEFAULT_CASTLING);
+
+    const updateCastlingRights = (castlingFen: string) => {
+        const castlingRights = Object.keys(castling).reduce(
+            (acc: ICastling, key) => {
+                acc[key as keyof ICastling] = castlingFen.includes(key);
+                return acc;
+            },
+            DEFAULT_CASTLING,
+        );
+        setCastling(castlingRights);
+    };
 
     const movePiece = (piece: IPiece, newSquare: ISquare) => {
         const isWhitePiece = isUpperCase(piece.code);
@@ -65,8 +85,20 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
             setHalfmoveClock(halfmove);
         }
         setTurn(isWhitePiece ? "b" : "w");
-        const newFen = convertPiecesInFen(pieces, boardSquares, halfmove);
-        console.log(newFen);
+        const newFen = convertPiecesInFen({
+            pieces,
+            boardSquares,
+            halfmoveCLock: halfmove,
+            pieceMoved: piece,
+            castlingRights: castling,
+        });
+        const newCastlingRights = newFen.split(" ")[2];
+        const oldCastlingRights = fen.split(" ")[2];
+
+        if (newCastlingRights !== oldCastlingRights) {
+            updateCastlingRights(newCastlingRights);
+        }
+
         setFen(newFen);
         setPieces(pieces);
     };
