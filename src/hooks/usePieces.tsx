@@ -71,6 +71,23 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
 
     const movePiece = (piece: IPiece, newSquare: ISquare) => {
         const isWhitePiece = isUpperCase(piece.code);
+
+        // capture check
+        const hasPieceInTheNewSquare = pieces.get(
+            `${newSquare.x}${newSquare.y}`,
+        );
+        if (hasPieceInTheNewSquare) {
+            pieces.delete(`${newSquare.x}${newSquare.y}`);
+        }
+
+        // halfmove clock rule verification
+        let halfmove = halfmoveClock;
+        if (piece.code.toLowerCase() === "p" || !hasPieceInTheNewSquare) {
+            halfmove++;
+            setHalfmoveClock(halfmove);
+        }
+
+        // updates the position of the moved piece
         const newPosition: IPiece = {
             ...piece,
             movementsMade: piece.movementsMade + 1,
@@ -79,12 +96,8 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
         };
         pieces.delete(`${piece.x}${piece.y}`);
         pieces.set(`${newPosition.x}${newPosition.y}`, newPosition);
-        let halfmove = halfmoveClock;
-        if (piece.code.toLowerCase() === "p") {
-            halfmove++;
-            setHalfmoveClock(halfmove);
-        }
-        setTurn(isWhitePiece ? "b" : "w");
+
+        // fen update
         const newFen = convertPiecesInFen({
             pieces,
             boardSquares,
@@ -92,6 +105,8 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
             pieceMoved: piece,
             castlingRights: castling,
         });
+
+        // catling rughts check
         const newCastlingRights = newFen.split(" ")[2];
         const oldCastlingRights = fen.split(" ")[2];
 
@@ -99,6 +114,7 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
             updateCastlingRights(newCastlingRights);
         }
 
+        setTurn(isWhitePiece ? "b" : "w");
         setFen(newFen);
         setPieces(pieces);
     };
