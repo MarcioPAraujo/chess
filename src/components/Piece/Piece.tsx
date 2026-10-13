@@ -22,6 +22,16 @@ function Piece({ square, onClick }: IPieceProps) {
     const isBlack = isLowerCase(piece.code);
     const styleColor = isBlack ? styles.black : styles.white;
 
+    const isDisabled = (turn === "b" && !isBlack) || (turn === "w" && isBlack);
+
+    if (isDisabled) {
+        return (
+            <div className={`${styles.piece} ${styleColor} ${styles.disabled}`}>
+                {pieces.get(`${square.x}${square.y}`)?.code}
+            </div>
+        );
+    }
+
     return (
         <button
             type="button"

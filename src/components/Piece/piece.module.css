@@ -1,8 +1,6 @@
 .piece {
-    position: absolute;
-    z-index: 1;
-    width: 80%;
-    height: 80%;
+    width: 90%;
+    height: 90%;
     border-radius: 50%;
 
     border: none;
@@ -26,4 +24,11 @@
 .white {
     background-color: white;
     color: black;
+}
+
+.disabled {
+    cursor: default;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

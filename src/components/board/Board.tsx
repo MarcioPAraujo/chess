@@ -27,8 +27,13 @@ function Board() {
                                 boardSquare={square}
                                 selectedPiece={selectedPiece}
                                 onClick={() => setSelectedPiece(undefined)}
+                                piece={
+                                    <Piece
+                                        square={square}
+                                        onClick={setSelectedPiece}
+                                    />
+                                }
                             />
-                            <Piece square={square} onClick={setSelectedPiece} />
                         </div>
                     ))}
                 </div>

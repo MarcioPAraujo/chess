@@ -4,28 +4,30 @@ import { useMoves } from "@/hooks/useMoves";
 import { usePiecesProvider } from "@/hooks/usePieces";
 import { IPiece } from "@/interfaces/Piece";
 import { ISquare } from "@/interfaces/Square";
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import styles from "./possiblemoves.module.css";
 
 interface IPossibleMovesProps {
     selectedPiece: IPiece | undefined;
     boardSquare: ISquare;
     onClick: VoidFunction;
+    piece?: ReactNode;
 }
 
 const PossibleMoves: FC<IPossibleMovesProps> = ({
     selectedPiece,
     boardSquare,
     onClick,
+    piece,
 }) => {
     const { possibleMoves } = useMoves();
     const { pieces, movePiece } = usePiecesProvider();
-    if (selectedPiece === undefined) return null;
+    if (selectedPiece === undefined) return <>{piece}</>;
 
     const moves = possibleMoves(selectedPiece, pieces);
 
     if (moves.get(`${boardSquare.x}${boardSquare.y}`) === undefined) {
-        return null;
+        return <>{piece}</>;
     }
 
     const takeStyle =
@@ -41,7 +43,9 @@ const PossibleMoves: FC<IPossibleMovesProps> = ({
                 movePiece(selectedPiece, boardSquare);
                 onClick();
             }}
-        />
+        >
+            {piece}
+        </button>
     );
 };
 export default PossibleMoves;
