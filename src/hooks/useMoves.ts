@@ -8,6 +8,7 @@ import { isUpperCase } from "@/utils/verifyCase";
  * @param columns number of columns moved, positve means move to right, and negative moves to left
  * @returns the new position
  */
+
 const newPlace = (
     piece: IPiece,
     rows: number = 0,
@@ -25,6 +26,10 @@ const newPlace = (
         y: piece.y + rows * -1,
         x: piece.x + columns * -1,
     };
+};
+
+const outOfRange = (coordinate: number): boolean => {
+    return coordinate > 8 || coordinate < 1;
 };
 
 const pawn = (
@@ -76,6 +81,49 @@ const pawn = (
     }
     return moves;
 };
+
+const knight = (
+    piece: IPiece,
+    otherPieces: Map<string, IPiece>,
+): Map<string, ISquare> => {
+    const upRight = newPlace(piece, 2, 1);
+    const upLeft = newPlace(piece, 2, -1);
+    const downRight = newPlace(piece, -2, 1);
+    const downLeft = newPlace(piece, -2, -1);
+    const leftUp = newPlace(piece, 1, -2);
+    const leftDown = newPlace(piece, -1, -2);
+    const rightUp = newPlace(piece, 1, 2);
+    const rightDown = newPlace(piece, 1, -2);
+
+    const moves = [
+        upLeft,
+        upRight,
+        downLeft,
+        downRight,
+        leftDown,
+        leftUp,
+        rightUp,
+        rightDown,
+    ];
+
+    const mapMoves: Map<string, ISquare> = new Map();
+
+    moves.forEach((move) => {
+        const moveCoor = `${move.x}${move.y}`;
+        const hasPieceInMove = otherPieces.get(moveCoor);
+        const isFriendPiece =
+            hasPieceInMove &&
+            isUpperCase(piece.code) === isUpperCase(hasPieceInMove.code);
+        if (isFriendPiece) {
+            return;
+        }
+        if (!outOfRange(move.x) && !outOfRange(move.y)) {
+            mapMoves.set(moveCoor, move);
+        }
+    });
+    return mapMoves;
+};
+
 export const useMoves = () => {
     const possibleMoves = (
         piece: IPiece,
@@ -93,6 +141,9 @@ export const useMoves = () => {
 
         if (piece.code.toLowerCase() === "p") {
             return pawn(piece, otherPieces);
+        }
+        if (piece.code.toLowerCase() === "n") {
+            return knight(piece, otherPieces);
         }
         return new Map();
     };
