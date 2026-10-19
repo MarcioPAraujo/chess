@@ -71,13 +71,14 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
 
     const movePiece = (piece: IPiece, newSquare: ISquare) => {
         const isWhitePiece = isUpperCase(piece.code);
+        const piecesCopy = new Map(pieces);
 
         // capture check
-        const hasPieceInTheNewSquare = pieces.get(
+        const hasPieceInTheNewSquare = piecesCopy.get(
             `${newSquare.x}${newSquare.y}`,
         );
         if (hasPieceInTheNewSquare) {
-            pieces.delete(`${newSquare.x}${newSquare.y}`);
+            piecesCopy.delete(`${newSquare.x}${newSquare.y}`);
         }
 
         // halfmove clock rule verification
@@ -94,12 +95,12 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
             x: newSquare.x,
             y: newSquare.y,
         };
-        pieces.delete(`${piece.x}${piece.y}`);
-        pieces.set(`${newPosition.x}${newPosition.y}`, newPosition);
+        piecesCopy.delete(`${piece.x}${piece.y}`);
+        piecesCopy.set(`${newPosition.x}${newPosition.y}`, newPosition);
 
         // fen update
         const newFen = convertPiecesInFen({
-            pieces,
+            pieces: piecesCopy,
             boardSquares,
             halfmoveCLock: halfmove,
             pieceMoved: piece,
@@ -116,7 +117,7 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
 
         setTurn(isWhitePiece ? "b" : "w");
         setFen(newFen);
-        setPieces(pieces);
+        setPieces(piecesCopy);
     };
 
     const board: IBoardStatus = useMemo(() => {
