@@ -185,6 +185,14 @@ const rook = (
     return new Map([...forward, ...backwards, ...left, ...right]);
 };
 
+const moves: Record<
+    string,
+    (piece: IPiece, otherPieces: Map<string, IPiece>) => Map<string, ISquare>
+> = {
+    p: pawn,
+    n: knight,
+    r: rook,
+};
 export const useMoves = () => {
     const possibleMoves = (
         piece: IPiece,
@@ -200,16 +208,22 @@ export const useMoves = () => {
             throw new Error(`The piece code: "${piece.code}" does not exists`);
         }
 
-        if (piece.code.toLowerCase() === "p") {
-            return pawn(piece, otherPieces);
+        const move = moves[piece.code.toLowerCase()];
+
+        if (!move) {
+            return new Map();
         }
-        if (piece.code.toLowerCase() === "n") {
-            return knight(piece, otherPieces);
-        }
-        if (piece.code.toLowerCase() === "r") {
-            return rook(piece, otherPieces);
-        }
-        return new Map();
+
+        // if (piece.code.toLowerCase() === "p") {
+        //     return pawn(piece, otherPieces);
+        // }
+        // if (piece.code.toLowerCase() === "n") {
+        //     return knight(piece, otherPieces);
+        // }
+        // if (piece.code.toLowerCase() === "r") {
+        //     return rook(piece, otherPieces);
+        // }
+        return move(piece, otherPieces);
     };
     return {
         possibleMoves,
