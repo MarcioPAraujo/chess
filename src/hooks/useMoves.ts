@@ -135,11 +135,11 @@ const knight = (
  *
  * @param piece piece being moved
  * @param otherPieces other pieces on the board
- * @param x the direction of the move in x axis (horizontal), +1 means forward and -1 backwards
- * @param y the direction of teh move in y axis (vertical), +1 means right and -1 left
+ * @param x the direction of the move in x axis (horizontal), +1 means right and -1 left
+ * @param y the direction of teh move in y axis (vertical), +1 means forward and -1 backwards
  * @returns
  */
-const rookLinesMoves = (
+const lineMoves = (
     piece: IPiece,
     otherPieces: Map<string, IPiece>,
     x = 0,
@@ -178,11 +178,28 @@ const rook = (
     piece: IPiece,
     otherPieces: Map<string, IPiece>,
 ): Map<string, ISquare> => {
-    const forward = rookLinesMoves(piece, otherPieces, 0, 1);
-    const backwards = rookLinesMoves(piece, otherPieces, 0, -1);
-    const left = rookLinesMoves(piece, otherPieces, -1);
-    const right = rookLinesMoves(piece, otherPieces, 1);
+    const forward = lineMoves(piece, otherPieces, 0, 1);
+    const backwards = lineMoves(piece, otherPieces, 0, -1);
+    const left = lineMoves(piece, otherPieces, -1);
+    const right = lineMoves(piece, otherPieces, 1);
     return new Map([...forward, ...backwards, ...left, ...right]);
+};
+
+const bishop = (
+    piece: IPiece,
+    otherPieces: Map<string, IPiece>,
+): Map<string, ISquare> => {
+    const rightUpDiagonal = lineMoves(piece, otherPieces, 1, 1);
+    const rightDownDiagonal = lineMoves(piece, otherPieces, 1, -1);
+    const leftUpDiagonal = lineMoves(piece, otherPieces, -1, 1);
+    const leftDownDiagonal = lineMoves(piece, otherPieces, -1, -1);
+
+    return new Map([
+        ...rightDownDiagonal,
+        ...rightUpDiagonal,
+        ...leftDownDiagonal,
+        ...leftUpDiagonal,
+    ]);
 };
 
 const moves: Record<
@@ -192,6 +209,7 @@ const moves: Record<
     p: pawn,
     n: knight,
     r: rook,
+    b: bishop,
 };
 export const useMoves = () => {
     const possibleMoves = (
@@ -213,16 +231,6 @@ export const useMoves = () => {
         if (!move) {
             return new Map();
         }
-
-        // if (piece.code.toLowerCase() === "p") {
-        //     return pawn(piece, otherPieces);
-        // }
-        // if (piece.code.toLowerCase() === "n") {
-        //     return knight(piece, otherPieces);
-        // }
-        // if (piece.code.toLowerCase() === "r") {
-        //     return rook(piece, otherPieces);
-        // }
         return move(piece, otherPieces);
     };
     return {
