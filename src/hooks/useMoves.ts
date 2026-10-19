@@ -212,6 +212,47 @@ const queen = (
     return new Map([...bishopMoves, ...rookMoves]);
 };
 
+// TODO: verify enemy pieces moves to disable moves that put the king on capture position
+// TODO: don't allow king capture a piece that is protected by other enemy piece
+const king = (
+    piece: IPiece,
+    otherPieces: Map<string, IPiece>,
+): Map<string, ISquare> => {
+    const moves: Map<string, ISquare> = new Map();
+
+    const front = newPlace(piece, 1);
+    const back = newPlace(piece, -1);
+    const left = newPlace(piece, 0, -1);
+    const right = newPlace(piece, 0, 1);
+    const rightUpDiagonal = newPlace(piece, 1, 1);
+    const rightDownDiagonal = newPlace(piece, -1, 1);
+    const leftUpDiagonal = newPlace(piece, 1, -1);
+    const leftDownDiagonal = newPlace(piece, -1, -1);
+
+    const directions = [
+        front,
+        back,
+        left,
+        right,
+        leftDownDiagonal,
+        leftUpDiagonal,
+        rightDownDiagonal,
+        rightUpDiagonal,
+    ];
+
+    directions.forEach((direction) => {
+        if (outOfRange(direction.x) || outOfRange(direction.y)) {
+            return;
+        }
+        const pieceOnWay = otherPieces.get(`${direction.x}${direction.y}`);
+        if (!isEnemyPiece(piece, pieceOnWay) && pieceOnWay) {
+            return;
+        }
+        moves.set(`${direction.x}${direction.y}`, direction);
+    });
+    return moves;
+};
+
 const moves: Record<
     string,
     (piece: IPiece, otherPieces: Map<string, IPiece>) => Map<string, ISquare>
@@ -221,6 +262,7 @@ const moves: Record<
     r: rook,
     b: bishop,
     q: queen,
+    k: king,
 };
 export const useMoves = () => {
     const possibleMoves = (
