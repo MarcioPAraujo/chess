@@ -4,8 +4,8 @@ import { isUpperCase } from "@/utils/verifyCase";
 /**
  *
  * @param piece piece being moved
- * @param rows number of rows to move, positive means forward and negative backwards
- * @param columns number of columns moved, positve means move to right, and negative moves to left
+ * @param rows number of rows to move (y axis), positive means forward and negative backwards
+ * @param columns number of columns moved (x axis), positve means move to right, and negative moves to left
  * @returns the new position
  */
 
@@ -30,6 +30,13 @@ const newPlace = (
 
 const outOfRange = (coordinate: number): boolean => {
     return coordinate > 8 || coordinate < 1;
+};
+const isEnemyPiece = (
+    movedPiece: IPiece,
+    otherPiece: IPiece | undefined,
+): boolean => {
+    if (!otherPiece) return false;
+    return isUpperCase(movedPiece.code) !== isUpperCase(otherPiece.code);
 };
 
 const pawn = (
@@ -124,6 +131,60 @@ const knight = (
     return mapMoves;
 };
 
+/**
+ *
+ * @param piece piece being moved
+ * @param otherPieces other pieces on the board
+ * @param x the direction of the move in x axis (horizontal), +1 means forward and -1 backwards
+ * @param y the direction of teh move in y axis (vertical), +1 means right and -1 left
+ * @returns
+ */
+const rookLinesMoves = (
+    piece: IPiece,
+    otherPieces: Map<string, IPiece>,
+    x = 0,
+    y = 0,
+): Map<string, ISquare> => {
+    if (x < -1 || x > 1) {
+        throw new Error("The x coordinate must be -1, 0 or 1");
+    }
+    if (y < -1 || y > 1) {
+        throw new Error("The y coordinate must be -1, 0 or 1");
+    }
+
+    const moves: Map<string, ISquare> = new Map();
+    let xAxis = x;
+    let yAxis = y;
+    let move = newPlace(piece, yAxis, xAxis);
+    let pieceOnWay = otherPieces.get(`${move.x}${move.y}`);
+    // verify the available squares available to move forward
+    if (isEnemyPiece(piece, pieceOnWay)) {
+        moves.set(`${move.x}${move.y}`, move);
+    }
+    while (!outOfRange(move.y) && !outOfRange(move.x) && !pieceOnWay) {
+        moves.set(`${move.x}${move.y}`, move);
+        xAxis = xAxis + x;
+        yAxis = yAxis + y;
+        move = newPlace(piece, yAxis, xAxis);
+        pieceOnWay = otherPieces.get(`${move.x}${move.y}`);
+
+        if (isEnemyPiece(piece, pieceOnWay)) {
+            moves.set(`${move.x}${move.y}`, move);
+        }
+    }
+    return moves;
+};
+const rook = (
+    piece: IPiece,
+    otherPieces: Map<string, IPiece>,
+): Map<string, ISquare> => {
+    const forward = rookLinesMoves(piece, otherPieces, 0, 1);
+    const backwards = rookLinesMoves(piece, otherPieces, 0, -1);
+    const left = rookLinesMoves(piece, otherPieces, -1);
+    const right = rookLinesMoves(piece, otherPieces, 1);
+    return new Map([...forward, ...backwards, ...left, ...right]);
+};
+
 export const useMoves = () => {
     const possibleMoves = (
         piece: IPiece,
@@ -144,6 +205,9 @@ export const useMoves = () => {
         }
         if (piece.code.toLowerCase() === "n") {
             return knight(piece, otherPieces);
+        }
+        if (piece.code.toLowerCase() === "r") {
+            return rook(piece, otherPieces);
         }
         return new Map();
     };
