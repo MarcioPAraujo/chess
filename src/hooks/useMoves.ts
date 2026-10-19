@@ -202,6 +202,16 @@ const bishop = (
     ]);
 };
 
+const queen = (
+    piece: IPiece,
+    otherPieces: Map<string, IPiece>,
+): Map<string, ISquare> => {
+    const bishopMoves = bishop(piece, otherPieces);
+    const rookMoves = rook(piece, otherPieces);
+
+    return new Map([...bishopMoves, ...rookMoves]);
+};
+
 const moves: Record<
     string,
     (piece: IPiece, otherPieces: Map<string, IPiece>) => Map<string, ISquare>
@@ -210,6 +220,7 @@ const moves: Record<
     n: knight,
     r: rook,
     b: bishop,
+    q: queen,
 };
 export const useMoves = () => {
     const possibleMoves = (
