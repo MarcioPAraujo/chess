@@ -6,6 +6,8 @@ import styles from "./piece.module.css";
 import { usePiecesProvider } from "@/hooks/usePieces";
 import { IPiece } from "@/interfaces/Piece";
 import { isLowerCase } from "@/utils/verifyCase";
+import { pieceImage } from "@/utils/pieceImage";
+import Image from "next/image";
 
 interface IPieceProps {
     square: ISquare;
@@ -20,14 +22,22 @@ function Piece({ square, onClick }: IPieceProps) {
     }
 
     const isBlack = isLowerCase(piece.code);
-    const styleColor = isBlack ? styles.black : styles.white;
 
     const isDisabled = (turn === "b" && !isBlack) || (turn === "w" && isBlack);
 
+    const renderedPiece = pieces.get(`${square.x}${square.y}`)?.code;
+
     if (isDisabled) {
         return (
-            <div className={`${styles.piece} ${styleColor} ${styles.disabled}`}>
-                {pieces.get(`${square.x}${square.y}`)?.code}
+            <div className={`${styles.piece} ${styles.disabled}`}>
+                {renderedPiece && (
+                    <Image
+                        src={pieceImage[renderedPiece]}
+                        alt=""
+                        width={60}
+                        height={60}
+                    />
+                )}
             </div>
         );
     }
@@ -35,13 +45,19 @@ function Piece({ square, onClick }: IPieceProps) {
     return (
         <button
             type="button"
-            disabled={(turn === "b" && !isBlack) || (turn === "w" && isBlack)}
-            className={`${styles.piece} ${styleColor}`}
+            className={`${styles.piece}`}
             onClick={() => {
                 onClick(piece);
             }}
         >
-            {pieces.get(`${square.x}${square.y}`)?.code}
+            {renderedPiece && (
+                <Image
+                    src={pieceImage[renderedPiece]}
+                    alt=""
+                    width={60}
+                    height={60}
+                />
+            )}
         </button>
     );
 }

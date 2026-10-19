@@ -16,15 +16,9 @@
     &:disabled {
         cursor: default;
     }
-}
-.black {
-    background-color: black;
-    color: white;
-}
-.white {
     background-color: white;
-    color: black;
 }
+
 
 .disabled {
     cursor: default;
