@@ -27,26 +27,11 @@ function Piece({ square, onClick }: IPieceProps) {
 
     const renderedPiece = pieces.get(`${square.x}${square.y}`)?.code;
 
-    if (isDisabled) {
-        return (
-            <div className={`${styles.piece} ${styles.disabled}`}>
-                {renderedPiece && (
-                    <Image
-                        src={pieceImage[renderedPiece]}
-                        alt=""
-                        width={60}
-                        height={60}
-                    />
-                )}
-            </div>
-        );
-    }
-
     return (
-        <button
-            type="button"
-            className={`${styles.piece}`}
+        <div
+            className={`${styles.piece} ${isDisabled ? styles.disabled : ""}`}
             onClick={() => {
+                if (isDisabled) return;
                 onClick(piece);
             }}
         >
@@ -58,7 +43,7 @@ function Piece({ square, onClick }: IPieceProps) {
                     height={60}
                 />
             )}
-        </button>
+        </div>
     );
 }
 

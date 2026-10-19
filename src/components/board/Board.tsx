@@ -41,10 +41,7 @@ function Board() {
             {/* x coordinates */}
             <div className={styles.row} style={{ marginLeft: "1.25rem" }}>
                 {xCoordinates.map((coor) => (
-                    <div
-                        key={crypto.randomUUID()}
-                        className={`${styles.xcoor}`}
-                    >
+                    <div key={coor} className={`${styles.xcoor}`}>
                         {coor}
                     </div>
                 ))}

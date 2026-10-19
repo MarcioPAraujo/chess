@@ -14,5 +14,5 @@
     width: 90%;
 }
 .take > div {
-    cursor: pointer;
+    cursor: pointer !important;
 }

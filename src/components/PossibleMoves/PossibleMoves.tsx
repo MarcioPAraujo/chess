@@ -36,8 +36,7 @@ const PossibleMoves: FC<IPossibleMovesProps> = ({
             : "";
 
     return (
-        <button
-            type="button"
+        <div
             className={`${styles.possibleMove} ${takeStyle}`}
             onClick={() => {
                 movePiece(selectedPiece, boardSquare);
@@ -45,7 +44,7 @@ const PossibleMoves: FC<IPossibleMovesProps> = ({
             }}
         >
             {piece}
-        </button>
+        </div>
     );
 };
 export default PossibleMoves;

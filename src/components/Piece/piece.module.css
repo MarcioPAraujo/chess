@@ -9,20 +9,14 @@
     font-size: 2rem;
     cursor: pointer;
 
+    display: grid;
+    place-items: center;
+
     &:active {
         cursor: grabbing;
     }
-
-    &:disabled {
-        cursor: default;
-    }
     background-color: white;
 }
-
-
 .disabled {
     cursor: default;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
