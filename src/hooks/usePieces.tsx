@@ -17,6 +17,7 @@ import {
 import { useBoard } from "./useBoard";
 import { isUpperCase } from "@/utils/verifyCase";
 import { ICastling } from "@/interfaces/Castling";
+import { useMoves } from "./useMoves";
 
 export type TurnType = "w" | "b";
 
@@ -49,6 +50,7 @@ const DEFAULT_CASTLING: ICastling = {
 
 export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
     const { boardSquares } = useBoard();
+    const { possibleMoves } = useMoves();
     const [fen, setFen] = useState<string>(DEFAULT_FEN);
     const [pieces, setPieces] = useState<Map<string, IPiece>>(
         convertFenInPieces(DEFAULT_FEN),
@@ -73,7 +75,7 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
         const isWhitePiece = isUpperCase(piece.code);
         const piecesCopy = new Map(pieces);
 
-        // capture check
+        // capture verification
         const hasPieceInTheNewSquare = piecesCopy.get(
             `${newSquare.x}${newSquare.y}`,
         );
@@ -89,12 +91,16 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
         }
 
         // updates the position of the moved piece
+
         const newPosition: IPiece = {
             ...piece,
             movementsMade: piece.movementsMade + 1,
             x: newSquare.x,
             y: newSquare.y,
         };
+        const newPossibleMoves = possibleMoves(newPosition, pieces);
+        newPosition.possibleMoves = newPossibleMoves;
+
         piecesCopy.delete(`${piece.x}${piece.y}`);
         piecesCopy.set(`${newPosition.x}${newPosition.y}`, newPosition);
 

@@ -19,6 +19,7 @@ export interface IPiece extends ISquare {
     // uppercase 'white' pieces
     code: PieceCodeType;
     movementsMade: number;
+    possibleMoves: Map<string, ISquare>;
 }
 
 export const isPieceCodeValid = (code: string): code is PieceCodeType => {
