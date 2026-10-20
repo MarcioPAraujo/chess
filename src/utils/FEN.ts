@@ -38,8 +38,6 @@ export const convertFenInPieces = (fen: string): Map<string, IPiece> => {
                 movementsMade: 0,
                 y: 8 - i,
                 x: j + 1,
-                // it's updated as the user moves the piece
-                possibleMoves: new Map(),
             };
             pieces.set(`${piece.x}${piece.y}`, piece);
         }

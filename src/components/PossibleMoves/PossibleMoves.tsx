@@ -24,18 +24,10 @@ const PossibleMoves: FC<IPossibleMovesProps> = ({
     const { pieces, movePiece } = usePiecesProvider();
     if (selectedPiece === undefined) return <>{piece}</>;
 
-    if (
-        selectedPiece.movementsMade > 0 &&
-        selectedPiece.possibleMoves.get(`${boardSquare.x}${boardSquare.y}`) ===
-            undefined
-    ) {
+    const moves = possibleMoves(selectedPiece, pieces);
+
+    if (moves.get(`${boardSquare.x}${boardSquare.y}`) === undefined) {
         return <>{piece}</>;
-    }
-    if (selectedPiece.movementsMade === 0) {
-        const moves = possibleMoves(selectedPiece, pieces);
-        if (moves.get(`${boardSquare.x}${boardSquare.y}`) === undefined) {
-            return <>{piece}</>;
-        }
     }
 
     const takeStyle =
