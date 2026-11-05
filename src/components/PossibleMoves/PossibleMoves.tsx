@@ -24,7 +24,7 @@ const PossibleMoves: FC<IPossibleMovesProps> = ({
     const { pieces, movePiece } = usePiecesProvider();
     if (selectedPiece === undefined) return <>{piece}</>;
 
-    const moves = possibleMoves(selectedPiece, pieces);
+    const moves = possibleMoves(selectedPiece);
 
     if (moves.get(`${boardSquare.x}${boardSquare.y}`) === undefined) {
         return <>{piece}</>;

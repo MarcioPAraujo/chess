@@ -41,6 +41,7 @@ function Piece({ square, onClick }: IPieceProps) {
                     alt=""
                     width={60}
                     height={60}
+                    loading="eager"
                 />
             )}
         </div>

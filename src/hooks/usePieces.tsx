@@ -38,7 +38,7 @@ const initialBoard: IBoardStatus = {
     turn: "w",
 };
 
-const PieceContext: Context<IBoardStatus> = createContext(initialBoard);
+const PieceContext = createContext<IBoardStatus | undefined>(undefined);
 
 const DEFAULT_CASTLING: ICastling = {
     K: true,
@@ -64,7 +64,7 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
                 acc[key as keyof ICastling] = castlingFen.includes(key);
                 return acc;
             },
-            DEFAULT_CASTLING,
+            { ...DEFAULT_CASTLING },
         );
         setCastling(castlingRights);
     };
@@ -83,7 +83,7 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
 
         // halfmove clock rule verification
         let halfmove = halfmoveClock;
-        if (piece.code.toLowerCase() === "p" || !hasPieceInTheNewSquare) {
+        if (piece.code.toLowerCase() === "p") {
             halfmove++;
             setHalfmoveClock(halfmove);
         }
@@ -118,6 +118,8 @@ export const PiecesProvider: React.FC<IChildrenProps> = ({ children }) => {
         setTurn(isWhitePiece ? "b" : "w");
         setFen(newFen);
         setPieces(piecesCopy);
+
+        // TODO: verify here is the movement made put the enemy king in check
     };
 
     const board: IBoardStatus = useMemo(() => {

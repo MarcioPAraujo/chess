@@ -1,6 +1,7 @@
 import { IPiece, isPieceCodeValid } from "@/interfaces/Piece";
 import { ISquare } from "@/interfaces/Square";
 import { isUpperCase } from "@/utils/verifyCase";
+import { usePiecesProvider } from "./usePieces";
 /**
  *
  * @param piece piece being moved
@@ -240,6 +241,10 @@ const king = (
         rightUpDiagonal,
     ];
 
+    // TODO: separate the enemy pieces and avaliate the possible moves
+    // block moves that put king on check
+    // verify if a capture positon put the king in range of another enemy piece. This can be done by adding a new attribute on piece
+    // that is updated on each move, so if an available saquare to move has an freind piece than that piece has as value of the attribute the piece which is protecting it
     directions.forEach((direction) => {
         if (outOfRange(direction.x) || outOfRange(direction.y)) {
             return;
@@ -265,10 +270,8 @@ const moves: Record<
     k: king,
 };
 export const useMoves = () => {
-    const possibleMoves = (
-        piece: IPiece,
-        otherPieces: Map<string, IPiece>,
-    ): Map<string, ISquare> => {
+    const { pieces } = usePiecesProvider();
+    const possibleMoves = (piece: IPiece): Map<string, ISquare> => {
         if (!piece) {
             throw new Error(
                 "The piece is undefined, there is not any moves to verify",
@@ -284,7 +287,7 @@ export const useMoves = () => {
         if (!move) {
             return new Map();
         }
-        return move(piece, otherPieces);
+        return move(piece, pieces);
     };
     return {
         possibleMoves,
