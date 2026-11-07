@@ -95,13 +95,14 @@ const knight = (
     otherPieces: Map<string, IPiece>,
 ): Map<string, ISquare> => {
     const upRight = newPlace(piece, 2, 1);
-    const upLeft = newPlace(piece, 2, -1);
     const downRight = newPlace(piece, -2, 1);
+    const rightUp = newPlace(piece, 1, 2);
+    const rightDown = newPlace(piece, -1, 2);
+
+    const upLeft = newPlace(piece, 2, -1);
     const downLeft = newPlace(piece, -2, -1);
     const leftUp = newPlace(piece, 1, -2);
     const leftDown = newPlace(piece, -1, -2);
-    const rightUp = newPlace(piece, 1, 2);
-    const rightDown = newPlace(piece, 1, -2);
 
     const moves = [
         upLeft,
