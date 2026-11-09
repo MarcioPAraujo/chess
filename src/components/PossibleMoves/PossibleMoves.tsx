@@ -20,8 +20,8 @@ const PossibleMoves: FC<IPossibleMovesProps> = ({
     onClick,
     piece,
 }) => {
-    const { possibleMoves } = useMoves();
     const { pieces, movePiece } = usePiecesProvider();
+    const { possibleMoves } = useMoves({ boardPieces: pieces });
     if (selectedPiece === undefined) return <>{piece}</>;
 
     const moves = possibleMoves(selectedPiece);

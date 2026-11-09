@@ -6,14 +6,7 @@ import {
     convertPiecesInFen,
     DEFAULT_FEN,
 } from "@/utils/FEN";
-import {
-    Context,
-    createContext,
-    ReactNode,
-    useContext,
-    useMemo,
-    useState,
-} from "react";
+import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 import { useBoard } from "./useBoard";
 import { isUpperCase } from "@/utils/verifyCase";
 import { ICastling } from "@/interfaces/Castling";

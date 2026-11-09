@@ -2,6 +2,11 @@ import { IPiece, isPieceCodeValid } from "@/interfaces/Piece";
 import { ISquare } from "@/interfaces/Square";
 import { isUpperCase } from "@/utils/verifyCase";
 import { usePiecesProvider } from "./usePieces";
+
+interface IPossibleMovesArg {
+    boardPieces: Map<string, IPiece>;
+}
+
 /**
  *
  * @param piece piece being moved
@@ -270,8 +275,7 @@ const moves: Record<
     q: queen,
     k: king,
 };
-export const useMoves = () => {
-    const { pieces } = usePiecesProvider();
+export const useMoves = ({ boardPieces }: IPossibleMovesArg) => {
     const possibleMoves = (piece: IPiece): Map<string, ISquare> => {
         if (!piece) {
             throw new Error(
@@ -288,7 +292,7 @@ export const useMoves = () => {
         if (!move) {
             return new Map();
         }
-        return move(piece, pieces);
+        return move(piece, boardPieces);
     };
     return {
         possibleMoves,

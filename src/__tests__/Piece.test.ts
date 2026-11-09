@@ -21,10 +21,11 @@ describe("isPieceCodeValid", () => {
             expect(isPieceCodeValid(pieceCode)).toBe(true);
         });
     });
-    it("should not accept invalid pieces code", () => {
-        const invalidPieces = ["a", "w", "e", "1", "qq", "king"];
-        invalidPieces.forEach((piece) => {
-            expect(isPieceCodeValid(piece)).toBe(false);
-        });
-    });
+    const invalidPieces = ["a", "w", "e", "1", "qq", "king"];
+    it.each(invalidPieces)(
+        "should not accept '%s' as a piece code",
+        (pieceCode) => {
+            expect(isPieceCodeValid(pieceCode)).toBe(false);
+        },
+    );
 });
