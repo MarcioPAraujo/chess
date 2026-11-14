@@ -37,4 +37,26 @@ describe("board squares", () => {
             expect(row).toHaveLength(8);
         });
     });
+    it("should have x-axis going from 'a' to 'h'", () => {
+        const { xCoordinates } = useBoard();
+        const coordinates = ["a", "b", "c", "d", "e", "f", "g", "h"];
+        expect(xCoordinates).toStrictEqual(coordinates);
+    });
+    it("have the correct board orientation", () => {
+        const { boardSquares } = useBoard();
+
+        expect(boardSquares[0][0]).toStrictEqual({ x: 1, y: 8 });
+        expect(boardSquares[7][7]).toStrictEqual({ x: 8, y: 1 });
+    });
+    it("should match key coordinates between board matrix and board map", () => {
+        const { boardMap, boardSquares } = useBoard();
+
+        boardSquares.forEach((row) => {
+            row.forEach((square) => {
+                expect(boardMap.get(`${square.x}${square.y}`)).toStrictEqual(
+                    square,
+                );
+            });
+        });
+    });
 });
